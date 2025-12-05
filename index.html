@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WishList Maker</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body { margin:0; padding:0; font-family: 'Inter', sans-serif; }
+:root { --pastel-purple: #d8c7ff; }
+
+#landingSection {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    background-image: url('https://images.pexels.com/photos/1303086/pexels-photo-1303086.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#landingSection h1 { font-size: 2.5rem; margin-bottom: 1rem; animation: slideDown 1s ease-out; }
+#landingSection p { font-size: 1.2rem; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; animation: slideDown 1.2s ease-out; }
+
+.btn-primary { background-color: var(--pastel-purple); border-color: var(--pastel-purple); color: #4b3a77; font-weight: 600; transition: transform 0.3s, background-color 0.3s; }
+.btn-primary:hover { background-color: #c1b2ff; transform: scale(1.05); }
+
+.btn-outline-primary { border-color: var(--pastel-purple); color: #4b3a77; font-weight: 600; transition: transform 0.3s; background-color: rgba(255,255,255,0.2); }
+.btn-outline-primary:hover { background-color: var(--pastel-purple); color: #4b3a77; transform: scale(1.05); }
+
+.wishlist-card, .card { 
+    border-radius: 18px; 
+    background: var(--pastel-purple); 
+    border: none; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+    color: #4b3a77; 
+}
+
+#giftList {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* ровно 5 колонок */
+    gap: 15px;
+}
+
+
+/* 🔥 Новые стили для карточек — только то, что ты просил */
+
+/* ширина карточки теперь меньше — помещается 4–5 в ряд */
+/* Карточка подарка (фиксированная ширина — кнопки не вылезут) */
+.gift-card {
+    width: 220px;
+    background: var(--pastel-purple);
+    border-radius: 18px;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden; /* ← предотвращает вылезание */
+}
+
+/* картинка — квадрат, маленькая, одинаковая у всех */
+/* Квадратные изображения (одинаковый формат) */
+.gift-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;   /* ← делает квадрат */
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+}
+
+/* название крупнее и жирнее */
+.gift-card h5 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* цена — синяя */
+.gift-card .price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0044cc;
+}
+
+.gift-card .btn {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;      /* кнопки не растягивают карточку */
+}
+.gift-card h5 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    min-height: 40px; /* фиксируем высоту названия */
+}
+
+.gift-card img {
+    width: 100%;
+    aspect-ratio: 1/1; /* квадрат */
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.gift-card p, .gift-card a {
+    margin: 0 0 5px 0;
+    min-height: 20px; /* выравниваем блоки с ценой и ссылкой */
+}
+
+.gift-card .btn {
+    width: 100%; /* кнопка «Забронировать» занимает всю ширину */
+}
+
+.gift-card .d-flex.gap-2 {
+    gap: 5px; /* отступ между иконками */
+}
+
+.gift-card {
+    width: 220px;
+    background: var(--pastel-purple);
+    border-radius: 18px;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;            /* добавлено */
+    flex-direction: column;   /* добавлено */
+    justify-content: space-between; /* добавлено */
+}
+
+.navbar { background-color: var(--pastel-purple); color: #4b3a77; }
+.navbar a { color: #4b3a77; font-weight: 600; }
+.navbar a:hover { color: #4b3a77; text-decoration: underline; }
+
+@keyframes slideDown { 
+    from {opacity:0; transform: translateY(-20px);} 
+    to {opacity:1; transform: translateY(0);} 
+}
+</style>
+</head>
+<body>
+
+
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light p-3" id="mainNavbar" style="display:none;">
+  <div class="container">
+    <a class="navbar-brand" href="#" id="navHome">WishlistMaker</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#" id="navWishlist">Мои вишлисты</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="navLogout">Выход</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+<!-- Landing Page -->
+<div id="landingSection">
+    <h1>WishlistMaker - сервис для создания вишлистов</h1>
+    <p>Создавай вишлисты на дни рождения, праздники и делись ими с друзьями.</p>
+
+    <div class="d-flex justify-content-center mb-3">
+        <button class="btn btn-primary btn-lg px-5 me-3" id="landingRegister">Регистрация</button>
+        <button class="btn btn-outline-primary btn-lg px-5 text-white" id="landingLogin">Вход</button>
+    </div>
+</div>
+
+
+
+<!-- Login Section -->
+<div class="container mt-5" id="authSection" style="display:none;">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow p-4">
+        <h3 class="text-center mb-3">Вход</h3>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" id="loginEmail">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Пароль</label>
+          <input type="password" class="form-control" id="loginPassword">
+        </div>
+
+        <button class="btn btn-primary w-100" id="loginBtn" disabled>Войти</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Register Section -->
+<div class="container mt-5" id="registerSection" style="display:none;">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow p-4">
+        <h3 class="text-center mb-3">Регистрация</h3>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" id="regEmail">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Пароль</label>
+          <input type="password" class="form-control" id="regPassword">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Имя</label>
+          <input type="text" class="form-control" id="regName">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Аватарка</label>
+          <input type="file" class="form-control" id="regAvatar">
+        </div>
+
+        <button class="btn btn-primary w-100" id="registerBtn" disabled>Зарегистрироваться</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Wishlist Section -->
+<div class="container mt-5" id="wishlistContainer" style="display:none;">
+  <h2 class="text-center mb-4">Добро пожаловать! Здесь вы можете создавать свои вишлисты.</h2>
+
+  <!-- User profile display -->
+  <div class="d-flex align-items-center mb-3" id="userProfile">
+    <img id="userAvatarDisplay" src="" alt="Аватар" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:10px;">
+    <span id="userNameDisplay" style="font-weight:600; color:#4b3a77;"></span>
+  </div>
+
+  <div class="card p-3 mb-3" id="giftForm">
+    <input type="text" class="form-control mb-2" placeholder="Название подарка">
+    <input type="url" class="form-control mb-2" placeholder="Ссылка на товар">
+    <input type="number" class="form-control mb-2" placeholder="Цена">
+    <input type="url" class="form-control mb-2" placeholder="URL изображения">
+    <textarea class="form-control mb-2" placeholder="Комментарий"></textarea>
+    <button class="btn btn-primary w-100" id="addGiftBtn">Добавить подарок</button>
+  </div>
+
+  <div id="giftList"></div>
+
+  <div class="mt-3">
+    <p>Поделитесь своим вишлистом: <input type="text" class="form-control" id="shareLink" readonly></p>
+  </div>
+</div>
+
+
+
+<script>
+const landing = document.getElementById('landingSection');
+const auth = document.getElementById('authSection');
+const reg = document.getElementById('registerSection');
+const formSection = document.getElementById('wishlistContainer');
+const navbar = document.getElementById('mainNavbar');
+
+function show(section){
+    landing.style.display='none';
+    auth.style.display='none';
+    reg.style.display='none';
+    formSection.style.display='none';
+
+    if(section) section.style.display='block';
+}
+
+function showNavbar(){ navbar.style.display='flex'; }
+
+show(landing);
+
+document.getElementById('landingLogin').addEventListener('click', () => show(auth));
+document.getElementById('landingRegister').addEventListener('click', () => show(reg));
+
+
+// ---------- ДИНАМИЧЕСКАЯ АКТИВАЦИЯ КНОПОК ----------
+
+// Регистрация
+const regEmail = document.getElementById('regEmail');
+const regPassword = document.getElementById('regPassword');
+const regName = document.getElementById('regName');
+const registerBtn = document.getElementById('registerBtn');
+
+function checkRegFields() {
+    registerBtn.disabled = !(regEmail.value.trim() && regPassword.value.trim() && regName.value.trim());
+}
+
+regEmail.addEventListener('input', checkRegFields);
+regPassword.addEventListener('input', checkRegFields);
+regName.addEventListener('input', checkRegFields);
+
+checkRegFields();
+
+
+// Вход
+const loginEmail = document.getElementById('loginEmail');
+const loginPassword = document.getElementById('loginPassword');
+const loginBtn = document.getElementById('loginBtn');
+
+function checkLoginFields() {
+    loginBtn.disabled = !(loginEmail.value.trim() && loginPassword.value.trim());
+}
+
+loginEmail.addEventListener('input', checkLoginFields);
+loginPassword.addEventListener('input', checkLoginFields);
+
+checkLoginFields();
+
+
+// Регистрация
+registerBtn.addEventListener('click', () => {
+    alert('Регистрация успешна!');
+    show(formSection);
+    showNavbar();
+
+    document.getElementById('shareLink').value = window.location.href + '#wishlist';
+
+    const avatarInput = document.getElementById('regAvatar');
+    const avatarDisplay = document.getElementById('userAvatarDisplay');
+    const nameDisplay = document.getElementById('userNameDisplay');
+
+    if(avatarInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => avatarDisplay.src = e.target.result;
+        reader.readAsDataURL(avatarInput.files[0]);
+    } else {
+        avatarDisplay.src = 'https://via.placeholder.com/40';
+    }
+
+    nameDisplay.textContent = regName.value;
+});
+
+
+// Вход
+loginBtn.addEventListener('click', () => {
+    alert('Вход выполнен!');
+    show(formSection);
+    showNavbar();
+    document.getElementById('shareLink').value = window.location.href + '#wishlist';
+});
+
+
+// ---------- Забыли пароль ----------
+const forgotBtn = document.createElement('button');
+forgotBtn.textContent = 'Забыли пароль?';
+forgotBtn.className = 'btn btn-link p-0 mt-2';
+document.getElementById('loginBtn').parentNode.appendChild(forgotBtn);
+
+forgotBtn.addEventListener('click', () => {
+    const email = loginEmail.value.trim();
+    if(!email) {
+        alert('Введите ваш Email для восстановления пароля.');
+        return;
+    }
+    alert(`На почту ${email} отправлена инструкция по восстановлению пароля (симуляция).`);
+});
+
+
+
+// ---------- ДОБАВЛЕНИЕ ПОДАРКА ----------
+const addGiftBtn = document.getElementById('addGiftBtn');
+
+addGiftBtn.addEventListener('click', () => {
+    const container = document.getElementById('giftList');
+    const form = document.getElementById('giftForm');
+
+    const name = form.querySelector('input[placeholder="Название подарка"]').value;
+    const link = form.querySelector('input[placeholder="Ссылка на товар"]').value;
+    const price = form.querySelector('input[placeholder="Цена"]').value;
+    const imageUrl = form.querySelector('input[placeholder="URL изображения"]').value;
+    const comment = form.querySelector('textarea[placeholder="Комментарий"]').value;
+
+    if(!name) {
+        alert('Введите название подарка');
+        return;
+    }
+
+    // карточка
+    const card = document.createElement('div');
+    card.className = 'card p-3 gift-card';
+
+    card.innerHTML = `
+    <div class="d-flex justify-content-between align-items-start">
+        <h5 class="mb-2">${name}</h5>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary editBtn" title="Редактировать">
+                ✏️
+            </button>
+            <button class="btn btn-sm btn-outline-danger deleteBtn" title="Удалить">
+                🗑️
+            </button>
+        </div>
+    </div>
+
+    ${imageUrl ? `<img src="${imageUrl}" alt="${name}">` : ''}
+
+    ${link ? `<p><a href="${link}" target="_blank">Открыть товар</a></p>` : ''}
+
+    <p class="price">${price ? price + ' ₽' : ''}</p>
+    <p>${comment}</p>
+
+    <button class="btn btn-success w-100 reserveBtn mt-2">Забронировать</button>
+`;
+
+
+    container.appendChild(card);
+
+    // удаление
+    card.querySelector('.deleteBtn').addEventListener('click', () => card.remove());
+
+    // редактирование
+    card.querySelector('.editBtn').addEventListener('click', () => {
+        form.querySelector('input[placeholder="Название подарка"]').value = name;
+        form.querySelector('input[placeholder="Ссылка на товар"]').value = link;
+        form.querySelector('input[placeholder="Цена"]').value = price;
+        form.querySelector('input[placeholder="URL изображения"]').value = imageUrl;
+        form.querySelector('textarea[placeholder="Комментарий"]').value = comment;
+        card.remove();
+    });
+
+    // бронь
+    card.querySelector('.reserveBtn').addEventListener('click', () => {
+        const btn = card.querySelector('.reserveBtn');
+
+        if(btn.textContent === 'Забронировать') {
+            card.style.opacity = '0.5';
+            btn.textContent = 'Отменить бронь';
+            alert('Подарок забронирован!');
+        } else {
+            card.style.opacity = '1';
+            btn.textContent = 'Забронировать';
+            alert('Бронь отменена!');
+        }
+    });
+
+    // очистить форму
+    form.querySelectorAll('input, textarea').forEach(el => el.value = '');
+});
+
+
+// ВЫХОД
+document.getElementById('navLogout').addEventListener('click', () => {
+    location.reload();
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
